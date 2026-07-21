@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>30-Day Job Search Sprint</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header id="topbar" class="hidden">
+  <div class="brand">30-Day Sprint</div>
+  <div id="sprintBadge" class="sprint-badge"></div>
+  <button id="logoutBtn" class="link-btn">Log out</button>
+</header>
+
+<main id="app">
+
+  <!-- AUTH -->
+  <section id="view-auth" class="view">
+    <div class="card narrow">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Log In</button>
+        <button class="tab-btn" data-tab="signup">Sign Up</button>
+      </div>
+
+      <form id="loginForm" class="tab-panel active">
+        <label>Email <input type="email" id="loginEmail" required /></label>
+        <label>Password <input type="password" id="loginPassword" required /></label>
+        <button type="submit">Log In</button>
+        <p class="error" id="loginError"></p>
+      </form>
+
+      <form id="signupForm" class="tab-panel">
+        <label>Email <input type="email" id="signupEmail" required /></label>
+        <label>Password (min 8 characters) <input type="password" id="signupPassword" required minlength="8" /></label>
+        <button type="submit">Create Account</button>
+        <p class="error" id="signupError"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ONBOARDING -->
+  <section id="view-onboarding" class="view">
+    <div class="card">
+      <h2>Let's set you up (one time only)</h2>
+
+      <div id="onboardResumeStep">
+        <h3>1. Paste your resume</h3>
+        <p class="hint">Saved once — you won't need to paste this again for the rest of the sprint.</p>
+        <textarea id="masterResumeInput" rows="12" placeholder="Paste your full resume text here..."></textarea>
+        <button id="saveResumeBtn">Save Resume &amp; Continue</button>
+        <p class="error" id="resumeError"></p>
+      </div>
+
+      <div id="onboardPrefsStep" class="hidden">
+        <h3>2. Your job preferences</h3>
+        <p class="hint">This helps us flag bad-fit postings before you waste an application.</p>
+
+        <label>Desired salary unit
+          <select id="prefSalaryUnit">
+            <option value="yearly">Per year</option>
+            <option value="hourly">Per hour</option>
+          </select>
+        </label>
+        <div class="row">
+          <label>Minimum <input type="number" id="prefSalaryMin" placeholder="e.g. 45000" /></label>
+          <label>Maximum <input type="number" id="prefSalaryMax" placeholder="e.g. 60000" /></label>
+        </div>
+        <label>Must-have benefits <textarea id="prefMustHaves" rows="2" placeholder="Health insurance, remote, 2+ weeks PTO..."></textarea></label>
+        <label>Nice-to-have benefits <textarea id="prefNiceToHaves" rows="2" placeholder="401k match, gym stipend..."></textarea></label>
+        <label>Dealbreakers <textarea id="prefDealbreakers" rows="2" placeholder="No weekends, no overnight shifts..."></textarea></label>
+
+        <button id="savePrefsBtn">Save &amp; Go to Dashboard</button>
+        <p class="error" id="prefsError"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="view">
+    <div class="dashboard-grid">
+      <div class="card stat-card">
+        <div class="stat-num" id="statSprintDay">–</div>
+        <div class="stat-label">Sprint Day (of 30)</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-num" id="statToday">–</div>
+        <div class="stat-label">Applications Today (goal 10)</div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-num" id="statTotal">–</div>
+        <div class="stat-label">Total Applications</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tracker-header">
+        <h2>Job Tracker</h2>
+        <div class="tracker-controls">
+          <select id="stageFilter">
+            <option value="">All stages</option>
+            <option value="applied">Applied</option>
+            <option value="phone_screen">Phone Screen</option>
+            <option value="interview">Interview</option>
+            <option value="final_round">Final Round</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+            <option value="withdrawn">Withdrawn</option>
+          </select>
+          <button id="newJobBtn">+ Add Job Posting</button>
+        </div>
+      </div>
+      <table id="jobsTable">
+        <thead>
+          <tr><th>Company</th><th>Role</th><th>Applied</th><th>Salary vs Target</th><th>Stage</th></tr>
+        </thead>
+        <tbody id="jobsTableBody"></tbody>
+      </table>
+      <p id="jobsEmpty" class="hint hidden">No applications yet — add your first job posting above.</p>
+    </div>
+  </section>
+
+  <!-- NEW JOB MODAL -->
+  <div id="newJobModal" class="modal hidden">
+    <div class="modal-content card">
+      <h2>Add a Job Posting</h2>
+      <label>Company name <input type="text" id="jobCompany" /></label>
+      <label>Role title <input type="text" id="jobRole" /></label>
+      <div class="row">
+        <label>Posted salary min (optional) <input type="number" id="jobSalaryMin" /></label>
+        <label>Posted salary max (optional) <input type="number" id="jobSalaryMax" /></label>
+      </div>
+      <label>Job posting text <textarea id="jobPostingText" rows="10" placeholder="Paste the full job posting here..."></textarea></label>
+      <div class="modal-actions">
+        <button id="cancelJobBtn" class="secondary">Cancel</button>
+        <button id="submitJobBtn">Save to Tracker</button>
+      </div>
+      <p class="error" id="jobError"></p>
+    </div>
+  </div>
+
+  <!-- JOB DETAIL -->
+  <section id="view-job" class="view">
+    <button id="backToDashboardBtn" class="link-btn">&larr; Back to Dashboard</button>
+    <div class="card">
+      <div class="job-detail-header">
+        <div>
+          <h2 id="jobDetailTitle">–</h2>
+          <span id="jobDetailSalaryBadge" class="badge"></span>
+        </div>
+        <select id="jobDetailStage">
+          <option value="applied">Applied</option>
+          <option value="phone_screen">Phone Screen</option>
+          <option value="interview">Interview</option>
+          <option value="final_round">Final Round</option>
+          <option value="offer">Offer</option>
+          <option value="rejected">Rejected</option>
+          <option value="withdrawn">Withdrawn</option>
+        </select>
+      </div>
+
+      <label>Notes
+        <textarea id="jobDetailNotes" rows="3" placeholder="e.g. Recruiter said they'd follow up next week"></textarea>
+      </label>
+      <button id="saveNotesBtn" class="secondary">Save Notes</button>
+
+      <div class="generate-buttons">
+        <button data-generate="resume">Tailored Resume + Cover Letter</button>
+        <button data-generate="linkedin">LinkedIn Suggestions</button>
+        <button data-generate="qaprep">Interview Q&amp;A Prep</button>
+        <button id="startMockInterviewBtn">Start Mock Interview</button>
+      </div>
+
+      <div id="generateOutput" class="output-box hidden"></div>
+
+      <h3>Saved Outputs</h3>
+      <div id="pastOutputs"></div>
+    </div>
+  </section>
+
+  <!-- MOCK INTERVIEW -->
+  <section id="view-mock" class="view">
+    <button id="backFromMockBtn" class="link-btn">&larr; Back to Job</button>
+    <div class="card">
+      <h2>Mock Interview</h2>
+      <p class="hint">Answer each question in your own words, like you would out loud. You'll get a critique and a better version after each answer.</p>
+      <div id="mockChat" class="mock-chat"></div>
+      <textarea id="mockAnswerInput" rows="4" placeholder="Type your answer here..."></textarea>
+      <button id="sendMockAnswerBtn">Send Answer</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
